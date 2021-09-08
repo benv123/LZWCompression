@@ -1,77 +1,66 @@
-import java.util.HashMap;
-import java.util.Stack;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.FileReader;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
+import java.util.*;
+import java.io.*;
+import java.nio.file.Files;
 public class LZWCompression{
     private final int MAX_SIZE=9;
     HashMap<String,Integer> dictionary=new HashMap<String,Integer>();
     public LZWCompression(){
-        for(int i=0;i<255;i++) {
-            dictionary.put(""+(char)(i),i);
-        }
+        for(int i=0;i<255;i++) dictionary.put(""+(char)(i),i);
     }
     public void compressFile(String file) throws IOException{
         BufferedReader reader=new BufferedReader(new FileReader(file));
+        File compressedFile=new File(file+" compressed");
+        String str="";
         try{
-            StringBuilder compressed=new StringBuilder();
             String line=reader.readLine();
             while(line!=null){
-                compressed.append(line);
+                str+=line;
                 line=reader.readLine();
             }
-             try{
-                 BufferedWriter out = new BufferedWriter(new FileWriter(file+" compressed"));
-                 out.write(compressLine(compressed.toString()));
-                 out.close();
-                 System.out.println("File created successfully");
-              }
-              catch (IOException e){
-              }
-        } finally{
+            try(FileOutputStream os=new FileOutputStream(compressedFile)){
+                os.write(this.compress(str));
+            }
             reader.close();
+            System.out.println("File compressed succesfully");
+        } catch(FileNotFoundException e){
+            e.printStackTrace();
+        } catch(IOException e){
+            e.printStackTrace();
         }
     }
-    public String compressLine(String str){
-        String compressed="";
+    @SuppressWarnings("deprecation")
+	public byte[] compress(String str){
+        ArrayList<Byte> arr=new ArrayList<Byte>();
         String current="";
-        for(int i=0;i<str.length();i++){
+        for(int i=0;str!=null&&i<str.length();i++){
             char next=str.charAt(i);
             if(dictionary.containsKey(current+next)){
                 current+=next;
             }
             else{
-                compressed+=this.binary(dictionary.get(current))+" ";
+                arr.add((new Integer(dictionary.get(current)/256)).byteValue());
+                arr.add((new Integer(dictionary.get(current)).byteValue()));
                 dictionary.put(current+next,dictionary.size()+1);
                 current=""+next;
             }
         }
-        compressed+=this.binary(dictionary.get(current))+" ";
-        //System.out.println(compressed);
-        return(compressed);
+        if(current!=""){
+            arr.add((new Integer(dictionary.get(current)/256)).byteValue());
+            arr.add((new Integer(dictionary.get(current)).byteValue()));
+        }
+        byte[] list=new byte[arr.size()];
+        for(int i=0;i<arr.size();i++){
+            list[i]=arr.get(i);
+        }
+        return(list);
     }
     public String binary(int num){
-        String str="";
-        Stack<Integer> stack=new Stack<>();
-        while(num>0){
-            stack.push(num%2);
-            num/=2;
-        }
-        while(!(stack.isEmpty())){
-            str+=stack.pop();
-        }
-        String zeros=""; // add zeros at the beginning of numbers in binary that are less than 2^(MAX_SIZE-1)
-        for(int i=0;i<MAX_SIZE-str.length();i++) {
-            zeros+="0";
-        }
-        return(zeros+str);
+    	String binary=Integer.toBinaryString(num);
+    	while(binary.length()<MAX_SIZE) binary="0"+binary;
+    	return binary;
     }
     public void printHashMap(){
-        for(HashMap.Entry<String,Integer> entry:dictionary.entrySet()){
-            System.out.println(entry.getKey());
-        }
+        for(HashMap.Entry<String,Integer> entry:dictionary.entrySet()) System.out.println(entry.getKey());
     }
     public String decompress(String compressed){
         if(compressed.equals("")){
@@ -85,6 +74,25 @@ public class LZWCompression{
                 value=entry.getKey();
             }
         }
-        return(""+value+this.decompress(compressed.substring(MAX_SIZE+1)));
+        return ""+value+this.decompress(compressed.substring(MAX_SIZE+1));
+    }
+    public void decompressFile(String fileName){
+        String str="";
+        try{
+            byte[] fileContent=Files.readAllBytes((new File(fileName)).toPath());
+            for(int i=0;i<fileContent.length;i+=2){
+                int num=fileContent[i];
+                int num2=fileContent[i+1];
+                for(HashMap.Entry<String,Integer> entry:dictionary.entrySet()){
+                    if(entry.getValue().equals(num*256+num2)){
+                        str+=entry.getKey();
+                    }
+                }
+            }
+            System.out.println(str);
+        } catch(IOException e){
+            e.printStackTrace();
+        }
     }
 }
+
