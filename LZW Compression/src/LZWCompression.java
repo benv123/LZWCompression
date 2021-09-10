@@ -38,8 +38,10 @@ public class LZWCompression{
                 current+=next;
             }
             else{
-                arr.add((new Integer(dictionary.get(current)/256)).byteValue());
-                arr.add((new Integer(dictionary.get(current)).byteValue()));
+            	if(dictionary.get(current)!=null){
+            		arr.add((new Integer(dictionary.get(current)/256)).byteValue());
+            		arr.add((new Integer(dictionary.get(current)).byteValue()));
+            	}
                 dictionary.put(current+next,dictionary.size()+1);
                 current=""+next;
             }
