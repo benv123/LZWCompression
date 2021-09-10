@@ -96,5 +96,9 @@ public class LZWCompression{
             e.printStackTrace();
         }
     }
+    
+    public String newDecompress (String compressed) {
+    	
+    }
 }
 
