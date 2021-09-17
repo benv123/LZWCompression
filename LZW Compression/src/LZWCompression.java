@@ -3,10 +3,7 @@ import java.io.*;
 import java.nio.file.Files;
 public class LZWCompression{
     private final int MAX_SIZE=9;
-    HashMap<String,Integer> dictionary=new HashMap<String,Integer>();
-    public LZWCompression(){
-        for(int i=0;i<255;i++) dictionary.put(""+(char)(i),i);
-    }
+    public LZWCompression(){}
     public void compressFile(String file) throws IOException{
         BufferedReader reader=new BufferedReader(new FileReader(file));
         File compressedFile=new File(file+" compressed");
@@ -30,6 +27,8 @@ public class LZWCompression{
     }
     @SuppressWarnings("deprecation")
 	public byte[] compress(String str){
+    	HashMap<String,Integer> dictionary=new HashMap<String,Integer>();
+    	for(int i=0;i<255;i++) dictionary.put(""+(char)(i),i);
         ArrayList<Byte> arr=new ArrayList<Byte>();
         String current="";
         for(int i=0;str!=null&&i<str.length();i++){
@@ -61,10 +60,7 @@ public class LZWCompression{
     	while(binary.length()<MAX_SIZE) binary="0"+binary;
     	return binary;
     }
-    public void printHashMap(){
-        for(HashMap.Entry<String,Integer> entry:dictionary.entrySet()) System.out.println(entry.getKey());
-    }
-    public String decompress(String compressed){
+    /**public String decompress(String compressed){
         if(compressed.equals("")){
             return("");
         }
@@ -77,8 +73,8 @@ public class LZWCompression{
             }
         }
         return ""+value+this.decompress(compressed.substring(MAX_SIZE+1));
-    }
-    public void decompressFile(String fileName){
+    }**/
+    /**public void decompressFile(String fileName){
         String str="";
         try{
             byte[] fileContent=Files.readAllBytes((new File(fileName)).toPath());
@@ -95,42 +91,31 @@ public class LZWCompression{
         } catch(IOException e){
             e.printStackTrace();
         }
-    }
-    
-    public String newDecompress(String file) throws FileNotFoundException {
-		/*
-		 * I checked the decoder this morning and it worked, but I had some problems with my repository
-		 * I fixed those problems so the decoder should be working now
-		 */
-    	
-    	//takes compressed file and turns it into ArrayList of Strings
+    }**/
+    public String decompress(String file) throws FileNotFoundException{
 		Scanner s = new Scanner(new File(file));
-		ArrayList<String> list = new ArrayList<String>();
-		while (s.hasNext()) {
+		ArrayList<String> list=new ArrayList<String>();
+		while(s.hasNext()){
 			list.add(s.next());
 		}
 		s.close();
-		// building dictionary
-		int size = 256;
-		HashMap<Integer, String> dictionary = new HashMap<Integer, String>();
-		for (int i = 0; i < size; i++) {
-			dictionary.put(i, "" + (char) i);
-		}
-		// adding compressed values back to dictionary
-		String place = "" + list.remove(0);
-		String last = place;
-		for (String i : list) {
+		HashMap<Integer,String> dictionary = new HashMap<Integer, String>();
+		int size=256;
+		for(int i=0;i<size;i++) dictionary.put(i,""+(char)i);
+		String place=""+list.remove(0);
+		String last=place;
+		for (String i:list){
 			String input;
-			if (dictionary.containsKey(i)) {
+			if(dictionary.containsKey(i)){
 				input = dictionary.get(i);
-			} else {
-				input = last + last.charAt(0);
+			} else{
+				input=last+last.charAt(0);
 			}
-			last = last + input;
-			dictionary.put(size++, place + input.charAt(0));
-			place = input;
+			last=last+input;
+			dictionary.put(size++,place+input.charAt(0));
+			place=input;
 		}
-		return last;
+		return(last);
 	}
 }
 
