@@ -99,7 +99,7 @@ public class LZWCompression{
 			list.add(s.next());
 		}
 		s.close();
-		HashMap<Integer,String> dictionary = new HashMap<Integer, String>();
+		HashMap<Integer,String> dictionary=new HashMap<Integer,String>();
 		int size=256;
 		for(int i=0;i<size;i++) dictionary.put(i,""+(char)i);
 		String place=""+list.remove(0);
@@ -107,7 +107,7 @@ public class LZWCompression{
 		for (String i:list){
 			String input;
 			if(dictionary.containsKey(i)){
-				input = dictionary.get(i);
+				input=dictionary.get(i);
 			} else{
 				input=last+last.charAt(0);
 			}
