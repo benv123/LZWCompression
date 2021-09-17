@@ -12,6 +12,6 @@ public class LZWCompressionMain{
 		compressor2.decompressFile("lzw-file2.txt");
 		System.out.println("lzw-file3.txt: ");
 		compressor3.compressFile("lzw-file3.txt");
-		compressor3.decompressFile("lzw-file3.txt");
+		compressor3.decompressFile("lzw-file2.txt");
 	}
 }

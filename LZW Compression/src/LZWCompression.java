@@ -98,7 +98,7 @@ public class LZWCompression{
     }
     
     public String newDecompress(String file) throws FileNotFoundException {
-		 //takes compressed file and turns it into ArrayList of Integers
+		 //takes compressed file and turns it into ArrayList of Strings
 		Scanner s = new Scanner(new File(file));
 		ArrayList<String> list = new ArrayList<String>();
 		while (s.hasNext()) {
