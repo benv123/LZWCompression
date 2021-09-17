@@ -97,8 +97,35 @@ public class LZWCompression{
         }
     }
     
-    public String newDecompress (String compressed) {
-    	
-    }
+    public String newDecompress(String file) throws FileNotFoundException {
+		 //takes compressed file and turns it into ArrayList of Integers
+		Scanner s = new Scanner(new File(file));
+		ArrayList<String> list = new ArrayList<String>();
+		while (s.hasNext()) {
+			list.add(s.next());
+		}
+		s.close();
+		// building dictionary
+		int size = 256;
+		HashMap<Integer, String> dictionary = new HashMap<Integer, String>();
+		for (int i = 0; i < size; i++) {
+			dictionary.put(i, "" + (char) i);
+		}
+		// adding compressed values back to dictionary
+		String place = "" + list.remove(0);
+		String last = place;
+		for (String i : list) {
+			String input;
+			if (dictionary.containsKey(i)) {
+				input = dictionary.get(i);
+			} else {
+				input = last + last.charAt(0);
+			}
+			last = last + input;
+			dictionary.put(size++, place + input.charAt(0));
+			place = input;
+		}
+		return last;
+	}
 }
 
