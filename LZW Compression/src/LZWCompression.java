@@ -98,7 +98,12 @@ public class LZWCompression{
     }
     
     public String newDecompress(String file) throws FileNotFoundException {
-		 //takes compressed file and turns it into ArrayList of Strings
+		/*
+		 * I checked the decoder this morning and it worked, but I had some problems with my repository
+		 * I fixed those problems so the decoder should be working now
+		 */
+    	
+    	//takes compressed file and turns it into ArrayList of Strings
 		Scanner s = new Scanner(new File(file));
 		ArrayList<String> list = new ArrayList<String>();
 		while (s.hasNext()) {
